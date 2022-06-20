@@ -1,4 +1,5 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { CreateTableDto } from './dto/create-table.dto';
 import { TableService } from './tabble.service';
 
 @Controller('table')
@@ -12,7 +13,7 @@ export class TableController {
 
   }
   @Post()
-  create() {
-    return this.tableService.create();
+  create(@Body() createTableDto: CreateTableDto) {
+    return this.tableService.create(createTableDto);
   }
 }
