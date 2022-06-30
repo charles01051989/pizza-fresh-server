@@ -24,7 +24,7 @@ export class TableController {
     summary: 'Visualizar uma mesa',
   })
   findOne(@Param('id') id: string): Promise<Table>{
-    return this.tableService.findOne(id);
+    return this.tableService.findById(id);
   }
 
   @Post()
