@@ -1,27 +1,58 @@
-import { Injectable } from "@nestjs/common";
-import { UpdateTableDto } from "src/table/dto/update-table.dto";
-import { CreateProductDto } from "./dto/create-product.dto";
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateProductDto } from './dto/create-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { Product } from './entities/product.entity';
 
 @Injectable()
-export class ProductService{
+export class ProductService {
 
-  create(createProductDto: CreateProductDto){
-    return '';
+  constructor(private readonly prisma: PrismaService) {}
+
+  findAll(): Promise<Product[]> {
+    return this.prisma.product.findMany();
   }
 
-  findAll(){
-    return '';
+  async findById(id: string): Promise<Product> {
+    const record = await this.prisma.product.findUnique({ where: { id } });
+    if (!record) {
+      throw new NotFoundException(`Registro com o '${id}' não encontrado!`)
+    }
+    return record;
   }
 
-  findOne(id: string) {
-    return {id};
-
-  }
-  update(id: string, updateProductDto: UpdateTableDto){
-    return `update a ${id} product`;
+  async findOne(id: string): Promise<Product> {
+    return this.findById(id);
   }
 
-  delete(id: string){
-    return '';
+  handleError(error: Error): undefined {
+    console.log(error.message);
+    throw new UnprocessableEntityException(error.message);
+
+
+  }
+
+  create(dto: CreateProductDto): Promise<Product> {
+    const data: Product = { ...dto };
+
+    return this.prisma.product.create({ data }).catch(this.handleError)
+  }
+
+  async update(id: string, dto: UpdateProductDto): Promise<Product> {
+
+    await this.findById(id);
+
+    const data: Partial<Product> = { ...dto };
+
+    return this.prisma.product.update({
+      where: { id },
+      data,
+    })
+    .catch(this.handleError);
+  }
+
+  async delete(id: string) {
+    await this.findById(id);
+    await this.prisma.product.delete({ where: {id} });
   }
 }
