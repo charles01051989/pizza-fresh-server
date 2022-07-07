@@ -4,6 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { handleError } from 'src/utils/handle-error.util';
 
 @Injectable()
 export class UserService {
@@ -37,15 +38,6 @@ export class UserService {
     return this.findById(id);
   }
 
-  handleError(error: Error): undefined {
-    const errorLines = error.message?.split('\n');
-    const lastErrorLines = errorLines[errorLines.length - 1]?.trim()
-    if (!lastErrorLines){
-    console.error(error);
-    }
-    throw new UnprocessableEntityException(lastErrorLines || "Algum erro ocorreu")
-  }
-
 
   async create(dto: CreateUserDto): Promise<User> {
 
@@ -56,7 +48,7 @@ export class UserService {
     delete dto.confirmPassword;
     const data: User = { ...dto, password: await bcrypt.hash(dto.password, 10) };
 
-    return this.prisma.user.create({ data, select: this.userSelect, }).catch(this.handleError)
+    return this.prisma.user.create({ data, select: this.userSelect, }).catch(handleError)
   }
 
   async update(id: string, dto: UpdateUserDto): Promise<User> {
@@ -78,7 +70,7 @@ export class UserService {
       data,
       select: this.userSelect,
     })
-    .catch(this.handleError);
+    .catch(handleError);
   }
 
   async delete(id: string) {
