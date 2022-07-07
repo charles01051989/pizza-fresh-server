@@ -24,6 +24,7 @@ export class CreateProductDto{
   price: number
   @ApiProperty({
     description: 'Url da imagem',
+    example: 'https://media.istockphoto.com/photos/pizza-margarita-with-cheese-top-view-isolated-on-white-background-picture-id1168754685?k=20&m=1168754685&s=612x612&w=0&h=XauWtcSx53Ey0yswLWggNGQi7gmTjba0TXloXO4NAIs='
   })
   @IsUrl()
   image: string
