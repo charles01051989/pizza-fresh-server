@@ -15,7 +15,7 @@ export class UserService {
     password: false,
     image: true,
     createdAt: true,
-    updateAt: true,
+    updatedAt: true,
   }
 
   constructor(private readonly prisma: PrismaService) {}

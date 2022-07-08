@@ -24,7 +24,6 @@ export class CreateUserDto {
     example: 'Abcd@1234',
   })
   password: string;
-  @IsString()
   @ApiProperty({
     description: 'A confirmação da senha deve ser igual a senha',
     example: 'Abcd@1234',
