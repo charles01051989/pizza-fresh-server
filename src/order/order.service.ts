@@ -21,9 +21,13 @@ export class OrderService {
         },
       },
       products: {
-        connect: createOrderDto.products.map((productId) => ({
-          id: productId,
-        })),
+        createMany: {
+          data: createOrderDto.products.map((createOrderProductDto) => ({
+            productId: createOrderProductDto.productId,
+            quantity: createOrderProductDto.quantity,
+            description: createOrderProductDto.description
+          }))
+        }
       },
     };
     return this.prisma.order.create({
@@ -42,17 +46,69 @@ export class OrderService {
       },
       products: {
         select: {
-          name: true,
+          quantity: true,
+          description: true,
+          product: {
+            select: {
+              name: true,
+            }
+          }
         }
       }
     }
       }).catch(handleError);
   }
   findAll() {
-    return `This action returns all order`;
+    return this.prisma.order.findMany({
+      select: {
+        id: true,
+        table: {
+          select: {
+            number: true,
+          },
+        },
+        user: {
+          select: {
+            name: true,
+          },
+        },
+        _count: {
+          select: {
+            products: true,
+          },
+        },
+      },
+    });
   }
 
   findOne(id: string) {
-    return `This action returns a #${id} order`;
+    return this.prisma.order.findUnique({
+      where: { id },
+      include: {
+        user: {
+          select: {
+            name: true,
+          },
+        },
+        table: {
+          select: {
+            number: true,
+          },
+        },
+        products: {
+          select: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                price: true,
+                image: true,
+                description: true,
+              }
+            }
+          }
+        },
+      },
+    });
   }
 }
