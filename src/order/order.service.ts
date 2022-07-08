@@ -4,26 +4,50 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { handleError } from 'src/utils/handle-error.util';
 import { CreateOrderDto } from './dto/create-order.dto';
 
-
 @Injectable()
 export class OrderService {
-  constructor(private readonly prisma: PrismaService){}
+  constructor(private readonly prisma: PrismaService) {}
 
   create(createOrderDto: CreateOrderDto) {
     const data: Prisma.OrderCreateInput = {
       user: {
         connect: {
-        id: createOrderDto.userId,
+          id: createOrderDto.userId,
+        },
       },
-    },
-    table: {
-      connect: {
-        number: createOrderDto.tableNumber,
+      table: {
+        connect: {
+          number: createOrderDto.tableNumber,
+        },
+      },
+      products: {
+        connect: createOrderDto.products.map((productId) => ({
+          id: productId,
+        })),
+      },
+    };
+    return this.prisma.order.create({
+    data,
+    select: {
+      id: true,
+      table: {
+        select: {
+          number: true
+        }
+      },
+      user: {
+        select: {
+          name: true
+        }
+      },
+      products: {
+        select: {
+          name: true,
+        }
       }
     }
+      }).catch(handleError);
   }
-  return this.prisma.order.create({ data }).catch(handleError)
-}
   findAll() {
     return `This action returns all order`;
   }
@@ -31,5 +55,4 @@ export class OrderService {
   findOne(id: string) {
     return `This action returns a #${id} order`;
   }
-
 }
