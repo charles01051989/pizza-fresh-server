@@ -25,38 +25,40 @@ export class OrderService {
           data: createOrderDto.products.map((createOrderProductDto) => ({
             productId: createOrderProductDto.productId,
             quantity: createOrderProductDto.quantity,
-            description: createOrderProductDto.description
-          }))
-        }
+            description: createOrderProductDto.description,
+          })),
+        },
       },
     };
-    return this.prisma.order.create({
-    data,
-    select: {
-      id: true,
-      table: {
+    return this.prisma.order
+      .create({
+        data,
         select: {
-          number: true
-        }
-      },
-      user: {
-        select: {
-          name: true
-        }
-      },
-      products: {
-        select: {
-          quantity: true,
-          description: true,
-          product: {
+          id: true,
+          table: {
+            select: {
+              number: true,
+            },
+          },
+          user: {
             select: {
               name: true,
-            }
-          }
-        }
-      }
-    }
-      }).catch(handleError);
+            },
+          },
+          products: {
+            select: {
+              quantity: true,
+              description: true,
+              product: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      })
+      .catch(handleError);
   }
   findAll() {
     return this.prisma.order.findMany({
@@ -104,9 +106,9 @@ export class OrderService {
                 price: true,
                 image: true,
                 description: true,
-              }
-            }
-          }
+              },
+            },
+          },
         },
       },
     });
