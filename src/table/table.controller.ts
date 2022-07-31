@@ -1,11 +1,14 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTableDto } from './dto/create-table.dto';
 import { TableService } from './table.service';
 import { Table } from './entities/table.entity';
 import { UpdateTableDto } from './dto/update-table.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiTags('table')
+@UseGuards(AuthGuard())
+@ApiBearerAuth()
 @Controller('table')
 export class TableController {
 
@@ -15,6 +18,7 @@ export class TableController {
   @ApiOperation({
     summary: 'Listar todas as mesas',
   })
+
   findAll(): Promise<Table[]> {
     return this.tableService.findAll();
   }
@@ -23,6 +27,7 @@ export class TableController {
   @ApiOperation({
     summary: 'Visualizar uma mesa',
   })
+
   findOne(@Param('id') id: string): Promise<Table>{
     return this.tableService.findById(id);
   }
@@ -39,6 +44,7 @@ export class TableController {
   @ApiOperation({
     summary: 'Editar uma mesa pelo ID',
   })
+
   update(@Param('id') id: string, @Body() dto: UpdateTableDto) : Promise<Table>{
     return this.tableService.update(id, dto);
   }
@@ -48,6 +54,7 @@ export class TableController {
   @ApiOperation({
     summary: 'Remover uma mesa pelo ID',
   })
+  
   delete(@Param('id') id: string){
     this.tableService.delete(id);
   }
